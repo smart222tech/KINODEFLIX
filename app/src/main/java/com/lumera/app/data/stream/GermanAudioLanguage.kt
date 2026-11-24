@@ -17,7 +17,7 @@ object GermanAudioLanguage {
     private val german = Regex(
         """(?i)(?:\bdeutsch\b|\bgerman\b|\bdeu\b|\bger\b|\bde[-_]de\b|\bde[-_]at\b|\bde[-_]ch\b|\[de\]|\(de\))"""
     )
-    private val multi = Regex(
+    private val subtitleOnly = Regex(\n        """(?i)(?:\\\\b(german|deutsch)\\\\s+(subtitles?|subs?)\\\\b|\\\\b(de|deu|ger)[ ._-]?(sub|subs|subtitle)\\\\b|\\\\bvostde\\\\b)"""\n    )\n    private val multi = Regex(
         """(?i)(?:\bdual[ ._-]?audio\b|\bmulti[ ._-]?audio\b|\bmehrsprachig\b|\bmultiple[ ._-]?audio\b)"""
     )
     private val nonGerman = Regex(
