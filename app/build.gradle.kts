@@ -146,6 +146,7 @@ dependencies {
 
     // 7. Video Player
     implementation(project(":playbackcore"))
+    implementation(project(":assrender"))
     implementation(files("../playbackcore/libs/lib-exoplayer-release.aar"))
     implementation(files("../playbackcore/libs/lib-decoder-av1-release.aar"))
     implementation(files("../playbackcore/libs/lib-decoder-ffmpeg-release.aar"))
