@@ -4,9 +4,7 @@ import com.lumera.app.data.model.stremio.Stream
 
 /**
  * Ranks addon-provided language hints for a German-first source picker.
- *
- * This is deliberately conservative: a filename/title is only a hint, not
- * proof of the actual audio tracks. The player remains authoritative.
+ * A filename/title is a hint, not proof of the embedded audio tracks.
  */
 object GermanAudioLanguage {
     const val GERMAN_CONFIRMED = 3
@@ -17,7 +15,13 @@ object GermanAudioLanguage {
     private val german = Regex(
         """(?i)(?:\bdeutsch\b|\bgerman\b|\bdeu\b|\bger\b|\bde[-_]de\b|\bde[-_]at\b|\bde[-_]ch\b|\[de\]|\(de\))"""
     )
-    private val subtitleOnly = Regex(\n        """(?i)(?:\\\\b(german|deutsch)\\\\s+(subtitles?|subs?)\\\\b|\\\\b(de|deu|ger)[ ._-]?(sub|subs|subtitle)\\\\b|\\\\bvostde\\\\b)"""\n    )\n    private val multi = Regex(
+    private val subtitleOnly = Regex(
+        """(?i)(?:\b(german|deutsch)\s+(subtitles?|subs?)\b|\b(de|deu|ger)[ ._-]?(sub|subs|subtitle)\b|\bvostde\b)"""
+    )
+    private val explicitGermanAudio = Regex(
+        """(?i)\b(german|deutsch)\s+(dub|audio|dubbing)\b"""
+    )
+    private val multi = Regex(
         """(?i)(?:\bdual[ ._-]?audio\b|\bmulti[ ._-]?audio\b|\bmehrsprachig\b|\bmultiple[ ._-]?audio\b)"""
     )
     private val nonGerman = Regex(
@@ -35,6 +39,7 @@ object GermanAudioLanguage {
         ).joinToString(" ")
 
         if (nonGerman.containsMatchIn(text)) return NON_GERMAN
+        if (subtitleOnly.containsMatchIn(text) && !explicitGermanAudio.containsMatchIn(text)) return UNKNOWN
         if (german.containsMatchIn(explicitLanguage)) return GERMAN_CONFIRMED
         if (german.containsMatchIn(text)) return GERMAN_CONFIRMED
         if (multi.containsMatchIn(text)) return MULTI_LANGUAGE
