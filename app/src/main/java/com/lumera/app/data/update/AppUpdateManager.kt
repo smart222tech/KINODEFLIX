@@ -52,7 +52,7 @@ class AppUpdateManager @Inject constructor(
     private val okHttpClient: OkHttpClient,
     @ApplicationContext private val context: Context
 ) {
-    private val prefs = context.getSharedPreferences("lumera_update_prefs", Context.MODE_PRIVATE)
+    private val prefs = context.getSharedPreferences("kinodeflix_update_prefs", Context.MODE_PRIVATE)
     private val _state = MutableStateFlow<UpdateState>(UpdateState.Idle)
     val state = _state.asStateFlow()
 
@@ -148,7 +148,7 @@ class AppUpdateManager @Inject constructor(
 
         val updateDir = File(context.cacheDir, "updates")
         updateDir.mkdirs()
-        val apkFile = File(updateDir, "lumera-update.apk")
+        val apkFile = File(updateDir, "kinodeflix-update.apk")
 
         val totalBytes = response.body?.contentLength() ?: -1L
         var downloadedBytes = 0L
