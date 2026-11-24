@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - feature/german-audio-priority
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
