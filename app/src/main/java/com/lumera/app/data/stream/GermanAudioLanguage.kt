@@ -15,13 +15,13 @@ object GermanAudioLanguage {
     const val NON_GERMAN = 0
 
     private val german = Regex(
-        """(?i)(?:\\bdeutsch\\b|\\bgerman\\b|\\bdeu\\b|\\bger\\b|\\bde[-_]de\\b|\\bde[-_]at\\b|\\bde[-_]ch\\b|\\[de\\]|\\(de\\))"""
+        """(?i)(?:\bdeutsch\b|\bgerman\b|\bdeu\b|\bger\b|\bde[-_]de\b|\bde[-_]at\b|\bde[-_]ch\b|\[de\]|\(de\))"""
     )
     private val multi = Regex(
-        """(?i)(?:\\bdual[ ._-]?audio\\b|\\bmulti[ ._-]?audio\\b|\\bmehrsprachig\\b|\\bmultiple[ ._-]?audio\\b)"""
+        """(?i)(?:\bdual[ ._-]?audio\b|\bmulti[ ._-]?audio\b|\bmehrsprachig\b|\bmultiple[ ._-]?audio\b)"""
     )
     private val nonGerman = Regex(
-        """(?i)(?:\\bohne deutsch\\b|\\bno german\\b|\\bnot german\\b|\\benglish only\\b|\\bonly english\\b)"""
+        """(?i)(?:\bohne deutsch\b|\bno german\b|\bnot german\b|\benglish only\b|\bonly english\b)"""
     )
 
     fun rank(stream: Stream): Int {
