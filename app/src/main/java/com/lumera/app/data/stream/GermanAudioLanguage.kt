@@ -39,6 +39,10 @@ object GermanAudioLanguage {
         ).joinToString(" ")
 
         if (nonGerman.containsMatchIn(text)) return NON_GERMAN
+        val normalizedLanguage = explicitLanguage.trim().lowercase().replace('_', '-')
+        if (normalizedLanguage == "de" || normalizedLanguage == "deu" ||
+            normalizedLanguage == "ger" || normalizedLanguage.startsWith("de-")
+        ) return GERMAN_CONFIRMED
         if (subtitleOnly.containsMatchIn(text) && !explicitGermanAudio.containsMatchIn(text)) return UNKNOWN
         if (german.containsMatchIn(explicitLanguage)) return GERMAN_CONFIRMED
         if (german.containsMatchIn(text)) return GERMAN_CONFIRMED
