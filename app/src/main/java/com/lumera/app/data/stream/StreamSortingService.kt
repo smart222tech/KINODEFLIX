@@ -49,7 +49,7 @@ class StreamSortingService @Inject constructor() {
         sortBy: String
     ): Comparator<Stream> {
         // Sort chain: chosen primary → other → seeds → addon priority
-        var comparator = when (sortBy) {
+        // German-language hints take precedence over quality/size; unknown sources remain available.\n        var comparator = compareByDescending<Stream> { GermanAudioLanguage.rank(it) }.then(when (sortBy) {
             "size" -> sortComparatorFor("size").then(sortComparatorFor("quality"))
             else -> sortComparatorFor("quality").then(sortComparatorFor("size"))
         }
