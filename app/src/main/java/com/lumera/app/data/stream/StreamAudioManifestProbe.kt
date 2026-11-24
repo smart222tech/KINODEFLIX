@@ -46,7 +46,7 @@ object StreamAudioManifestProbe {
     private fun fetchManifest(url: String): String? {
         val request = Request.Builder()
             .url(url)
-            .header("Range", "bytes=0-\${MAX_MANIFEST_BYTES - 1}")
+            .header("Range", "bytes=0-${MAX_MANIFEST_BYTES - 1}")
             .header("Accept", "application/vnd.apple.mpegurl, application/dash+xml, */*")
             .build()
 
