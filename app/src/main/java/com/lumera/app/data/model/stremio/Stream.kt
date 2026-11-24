@@ -12,6 +12,8 @@ data class Stream(
     val name: String? = null,
     val title: String? = null,
     val description: String? = null,
+    /** Optional addon language hint (not guaranteed to reflect embedded audio tracks). */
+    val language: String? = null,
     val url: String? = null,
     val infoHash: String? = null,
     val fileIdx: Int? = null,

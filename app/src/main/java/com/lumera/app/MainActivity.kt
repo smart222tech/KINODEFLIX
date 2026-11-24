@@ -64,6 +64,7 @@ import com.lumera.app.ui.watchlist.WatchlistScreen
 import com.lumera.app.ui.home.HomeViewModel
 import com.lumera.app.data.model.stremio.MetaItem
 import com.lumera.app.data.model.stremio.Stream
+import com.lumera.app.data.stream.GermanAudioLanguage
 import com.lumera.app.data.model.stremio.StreamSubtitle
 import com.lumera.app.data.model.stremio.MetaVideo
 import com.lumera.app.data.repository.AddonRepository
@@ -230,7 +231,12 @@ private fun sourceDisplayLabel(stream: Stream): String {
             ?.trim()
             ?.takeIf { it.isNotEmpty() }
         ?: "Source"
-    return primary.replace('\n', ' ')
+    val cleanLabel = primary.replace('\n', ' ')
+    return when (GermanAudioLanguage.rank(stream)) {
+        GermanAudioLanguage.GERMAN_CONFIRMED -> "🇩🇪 $cleanLabel"
+        GermanAudioLanguage.MULTI_LANGUAGE -> "🌐 $cleanLabel"
+        else -> cleanLabel
+    }
 }
 
 private fun launchExternalPlayer(context: android.content.Context, url: String) {
@@ -1757,7 +1763,7 @@ class MainActivity : ComponentActivity() {
                                     autoplayThresholdMode = currentProfile?.autoplayThresholdMode ?: "percentage",
                                     autoplayThresholdPercent = currentProfile?.autoplayThresholdPercent ?: 95,
                                     autoplayThresholdSeconds = currentProfile?.autoplayThresholdSeconds ?: 30,
-                                    preferredAudioLanguage = currentProfile?.preferredAudioLanguage ?: "",
+                                    preferredAudioLanguage = currentProfile?.preferredAudioLanguage?.takeIf { it.isNotBlank() } ?: "de",
                                     preferredAudioLanguageSecondary = currentProfile?.preferredAudioLanguageSecondary ?: "",
                                     preferredSubtitleLanguage = currentProfile?.preferredSubtitleLanguage ?: "",
                                     preferredSubtitleLanguageSecondary = currentProfile?.preferredSubtitleLanguageSecondary ?: "",

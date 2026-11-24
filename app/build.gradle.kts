@@ -27,15 +27,15 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.lumera.app"
+        applicationId = "com.smart222tech.kinodeflix"
         minSdk = 26
         targetSdk = 34
         versionCode = 9
         versionName = "0.1.8-beta"
 
         // GitHub repository for auto-update system
-        buildConfigField("String", "GITHUB_OWNER", "\"LumeraD3v\"")
-        buildConfigField("String", "GITHUB_REPO", "\"Lumera\"")
+        buildConfigField("String", "GITHUB_OWNER", "\"smart222tech\"")
+        buildConfigField("String", "GITHUB_REPO", "\"KINODEFLIX\"")
 
         // ACRA crash reporting (loaded from local.properties)
         buildConfigField("String", "ACRA_URL", "\"$acraUrl\"")
@@ -60,7 +60,7 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = ".test"
-            resValue("string", "app_name", "Lumera Test")
+            resValue("string", "app_name", "KINODEFLIX Test")
         }
         release {
             isMinifyEnabled = true
@@ -112,9 +112,6 @@ composeCompiler {
 }
 
 dependencies {
-    // 0. ASS/SSA subtitle renderer
-    implementation(project(":assrender"))
-
     // 1. Android TV UI (Compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
@@ -149,6 +146,7 @@ dependencies {
 
     // 7. Video Player
     implementation(project(":playbackcore"))
+    implementation(project(":assrender"))
     implementation(files("../playbackcore/libs/lib-exoplayer-release.aar"))
     implementation(files("../playbackcore/libs/lib-decoder-av1-release.aar"))
     implementation(files("../playbackcore/libs/lib-decoder-ffmpeg-release.aar"))

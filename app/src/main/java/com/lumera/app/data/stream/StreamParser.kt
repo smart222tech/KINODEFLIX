@@ -58,6 +58,7 @@ object StreamParser {
             stream.name,
             stream.title,
             stream.description,
+            stream.language,
             stream.behaviorHints?.filename
         ).joinToString(" ")
     }

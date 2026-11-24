@@ -1,0 +1,42 @@
+name: KINODEFLIX Android Build
+
+on:
+  push:
+    branches:
+      - feature/german-audio-priority
+  workflow_dispatch:
+
+concurrency:
+  group: kinodeflix-android-build
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Checkout ASS subtitle renderer
+        uses: actions/checkout@v4
+        with:
+          repository: LumeraD3v/assrender
+          path: assrender
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Build debug APK
+        run: chmod +x gradlew && ./gradlew --no-daemon assembleDebug
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: KINODEFLIX-german-audio-debug
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
