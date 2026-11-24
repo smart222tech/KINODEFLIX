@@ -1763,7 +1763,7 @@ class MainActivity : ComponentActivity() {
                                     autoplayThresholdMode = currentProfile?.autoplayThresholdMode ?: "percentage",
                                     autoplayThresholdPercent = currentProfile?.autoplayThresholdPercent ?: 95,
                                     autoplayThresholdSeconds = currentProfile?.autoplayThresholdSeconds ?: 30,
-                                    preferredAudioLanguage = currentProfile?.preferredAudioLanguage ?: "",
+                                    preferredAudioLanguage = currentProfile?.preferredAudioLanguage?.takeIf { it.isNotBlank() } ?: "de",
                                     preferredAudioLanguageSecondary = currentProfile?.preferredAudioLanguageSecondary ?: "",
                                     preferredSubtitleLanguage = currentProfile?.preferredSubtitleLanguage ?: "",
                                     preferredSubtitleLanguageSecondary = currentProfile?.preferredSubtitleLanguageSecondary ?: "",
