@@ -19,6 +19,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -338,8 +340,19 @@ class AddonRepository @Inject constructor(
             }
         }
 
-        // Keep all sources, but show explicit German-language hints first.
-        jobs.awaitAll().flatten().sortedByDescending(GermanAudioLanguage::rank)
+        val streams = jobs.awaitAll().flatten()
+        // Probe only direct HLS/DASH manifests, with bounded concurrency and no segment downloads.
+        val semaphore = Semaphore(3)
+        val probeCandidates = streams.take(12).map { stream ->
+            async {
+                semaphore.withPermit {
+                    runCatching { StreamAudioManifestProbe.enrich(stream) }.getOrDefault(stream)
+                }
+            }
+        }.awaitAll()
+        val enriched = probeCandidates + streams.drop(12)
+        // Keep all sources, but rank manifest-confirmed and addon-hinted German sources first.
+        enriched.sortedByDescending(GermanAudioLanguage::rank)
     }
 
     suspend fun getAddonSortOrders(): Map<String, Int> = withContext(Dispatchers.IO) {
