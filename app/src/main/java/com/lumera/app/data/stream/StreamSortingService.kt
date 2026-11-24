@@ -48,11 +48,14 @@ class StreamSortingService @Inject constructor() {
         addonSortOrders: Map<String, Int>,
         sortBy: String
     ): Comparator<Stream> {
-        // Sort chain: chosen primary → other → seeds → addon priority
-        // German-language hints take precedence over quality/size; unknown sources remain available.\n        var comparator = compareByDescending<Stream> { GermanAudioLanguage.rank(it) }.then(when (sortBy) {
-            "size" -> sortComparatorFor("size").then(sortComparatorFor("quality"))
-            else -> sortComparatorFor("quality").then(sortComparatorFor("size"))
-        }
+        // German-language hints take precedence; unknown-language sources remain available.
+        var comparator = compareByDescending<Stream> { GermanAudioLanguage.rank(it) }
+            .then(
+                when (sortBy) {
+                    "size" -> sortComparatorFor("size").then(sortComparatorFor("quality"))
+                    else -> sortComparatorFor("quality").then(sortComparatorFor("size"))
+                }
+            )
         comparator = comparator.then(sortComparatorFor("seeds"))
         comparator = comparator.thenBy { addonSortOrders[it.addonTransportUrl] ?: Int.MAX_VALUE }
         return comparator
