@@ -6,6 +6,10 @@ on:
       - feature/german-audio-priority
   workflow_dispatch:
 
+concurrency:
+  group: kinodeflix-android-build
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
