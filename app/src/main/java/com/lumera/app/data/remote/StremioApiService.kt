@@ -2,6 +2,7 @@ package com.lumera.app.data.remote
 
 import com.lumera.app.data.model.stremio.CatalogResponse
 import com.lumera.app.data.model.stremio.Manifest
+import com.lumera.app.data.model.stremio.OfficialAddonDescriptor
 import com.lumera.app.data.model.stremio.MetaResponse
 import com.lumera.app.data.model.stremio.SubtitleResponse
 import com.lumera.app.data.model.stremio.StreamResponse
@@ -9,6 +10,9 @@ import retrofit2.http.GET
 import retrofit2.http.Url
 
 interface StremioApiService {
+
+    @GET
+    suspend fun getOfficialAddonIndex(@Url url: String): List<OfficialAddonDescriptor>
 
     @GET
     suspend fun getManifest(@Url url: String): Manifest

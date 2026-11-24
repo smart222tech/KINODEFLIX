@@ -21,6 +21,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -32,6 +34,50 @@ class AddonRepository @Inject constructor(
 ) {
     private val gson = Gson()
     private val MAX_CATALOG_PAGES = 30
+
+    // Auto-discover only a small, explicitly official set of Stremio integrations.
+    // This reads a public add-on index; it does not crawl the entire web.
+    private val officialProvidersMutex = Mutex()
+    @Volatile private var officialProvidersInitialized = false
+    private val officialProviderIds = setOf(
+        "org.stremio.pubdomainmovies",
+        "org.stremio.watchhub"
+    )
+    private val officialAddonIndexUrl =
+        "https://raw.githubusercontent.com/Stremio/stremio-official-addons/master/index.json"
+
+    private suspend fun ensureOfficialStreamingAddons() {
+        if (officialProvidersInitialized) return
+        officialProvidersMutex.withLock {
+            if (officialProvidersInitialized) return@withLock
+            val descriptors = try {
+                withTimeout(CATALOG_TIMEOUT_MS) { api.getOfficialAddonIndex(officialAddonIndexUrl) }
+            } catch (_: Exception) {
+                return@withLock
+            }
+            val installedUrls = dao.getAllAddons().firstOrNull().orEmpty()
+                .mapTo(mutableSetOf()) { it.transportUrl }
+            descriptors.filter { descriptor ->
+                descriptor.manifest.id in officialProviderIds &&
+                    descriptor.transportUrl.startsWith("https://") &&
+                    descriptor.manifest.resources.orEmpty().any { resource ->
+                        when {
+                            resource.isJsonPrimitive -> resource.asString == "stream"
+                            resource.isJsonObject -> resource.asJsonObject.get("name")?.asString == "stream"
+                            else -> false
+                        }
+                    }
+            }.forEach { descriptor ->
+                val manifestUrl = descriptor.transportUrl
+                val transportUrl = manifestUrl.removeSuffix("/manifest.json")
+                if (transportUrl !in installedUrls) {
+                    runCatching { installAddonWithConfig(manifestUrl, false, false, false) }
+                    installedUrls.add(transportUrl)
+                }
+            }
+            officialProvidersInitialized = true
+        }
+    }
 
     /** Filter out MetaItems where Gson injected null into non-null Kotlin fields */
     private fun List<MetaItem>.sanitize(): List<MetaItem> = filter { item ->
@@ -321,6 +367,7 @@ class AddonRepository @Inject constructor(
     }
 
     suspend fun getStreams(type: String, id: String): List<Stream> = withContext(Dispatchers.IO) {
+        ensureOfficialStreamingAddons()
         val addons = dao.getAllAddons().firstOrNull()
             ?.filter { it.isEnabled && it.supportsStream }
             ?: emptyList()
