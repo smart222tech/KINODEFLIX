@@ -15,6 +15,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Checkout ASS subtitle renderer
+        uses: actions/checkout@v4
+        with:
+          repository: LumeraD3v/assrender
+          path: assrender
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
