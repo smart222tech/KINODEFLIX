@@ -338,7 +338,8 @@ class AddonRepository @Inject constructor(
             }
         }
 
-        jobs.awaitAll().flatten()
+        // Keep all sources, but show explicit German-language hints first.
+        jobs.awaitAll().flatten().sortedByDescending(GermanAudioLanguage::rank)
     }
 
     suspend fun getAddonSortOrders(): Map<String, Int> = withContext(Dispatchers.IO) {
